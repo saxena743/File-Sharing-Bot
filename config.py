@@ -2,74 +2,71 @@ import os
 import logging
 from logging.handlers import RotatingFileHandler
 
-
-
+# ────────────────────────────────────────────────
+#               ENVIRONMENT VARIABLES
+# ────────────────────────────────────────────────
 
 BOT_TOKEN = os.environ.get("BOT_TOKEN", "")
-API_ID = int(os.environ.get("API_ID", ""))
+API_ID = int(os.environ.get("API_ID", "0"))
 API_HASH = os.environ.get("API_HASH", "")
+OWNER_ID = int(os.environ.get("OWNER_ID", "0"))
 
-
-OWNER_ID = int(os.environ.get("OWNER_ID", ""))
+# MongoDB connection (must be set in environment variables!)
 DB_URL = os.environ.get("DB_URL", "")
-DB_NAME = os.environ.get("DB_NAME", "madflixbotz")
+DB_NAME = os.environ.get("DB_NAME", "wifeybot")   # change if you want different db name
 
-
-CHANNEL_ID = int(os.environ.get("CHANNEL_ID", ""))
+CHANNEL_ID = int(os.environ.get("CHANNEL_ID", "0"))
 FORCE_SUB_CHANNEL = int(os.environ.get("FORCE_SUB_CHANNEL", "0"))
 
-
-FILE_AUTO_DELETE = int(os.getenv("FILE_AUTO_DELETE", "600")) # auto delete in seconds
-
+# Auto-delete time in seconds (45 minutes = 2700)
+FILE_AUTO_DELETE = int(os.environ.get("FILE_AUTO_DELETE", "2700"))
 
 PORT = os.environ.get("PORT", "8080")
 TG_BOT_WORKERS = int(os.environ.get("TG_BOT_WORKERS", "4"))
 
-
-
+# Admins list
+ADMINS = [OWNER_ID]
 try:
-    ADMINS=[6848088376]
-    for x in (os.environ.get("ADMINS", "6848088376").split()):
-        ADMINS.append(int(x))
+    admin_str = os.environ.get("ADMINS", "")
+    if admin_str:
+        for x in admin_str.split():
+            ADMINS.append(int(x))
 except ValueError:
-        raise Exception("Your Admins list does not contain valid integers.")
+    raise Exception("ADMINS environment variable contains invalid integers.")
 
+# Remove duplicates and sort (optional but cleaner)
+ADMINS = sorted(set(ADMINS))
 
-
-
-
-
-
-
+# ────────────────────────────────────────────────
+#               BOT MESSAGES & SETTINGS
+# ────────────────────────────────────────────────
 
 CUSTOM_CAPTION = os.environ.get("CUSTOM_CAPTION", None)
 
-PROTECT_CONTENT = True if os.environ.get('PROTECT_CONTENT', "False") == "True" else False
+PROTECT_CONTENT = os.environ.get('PROTECT_CONTENT', "False").lower() == "true"
 
-DISABLE_CHANNEL_BUTTON = True if os.environ.get('DISABLE_CHANNEL_BUTTON', "True") == "True" else False
+DISABLE_CHANNEL_BUTTON = os.environ.get('DISABLE_CHANNEL_BUTTON', "True").lower() == "true"
 
-BOT_STATS_TEXT = "<b>BOT UPTIME :</b>\n{uptime}"
+BOT_STATS_TEXT = "<b>Bot Uptime :</b>\n{uptime}"
 
+USER_REPLY_TEXT = "❌ Don't send me messages directly!\nI'm only a file sharing bot."
 
+START_MSG = os.environ.get(
+    "START_MESSAGE",
+    "🌸 Welcome to Wifey FanBase™ 🌸\n\n"
+    "Your daily dose of exclusive content is here 💕\n"
+    "Choose a category to explore 👇"
+)
 
+FORCE_MSG = os.environ.get(
+    "FORCE_SUB_MESSAGE",
+    "Hello {mention}\n\n"
+    "<b>You need to join my channel/group to use me.</b>\n"
+    "Kindly join the channel first → then come back ❤️"
+)
 
-
-
-
-USER_REPLY_TEXT = "❌Don't Send Me Messages Directly I'm Only File Share Bot !"
-
-START_MSG = os.environ.get("START_MESSAGE", "Hello {mention}\n\nI Can Store Private Files In Specified Channel And Other Users Can Access It From Special Link.")
-
-FORCE_MSG = os.environ.get("FORCE_SUB_MESSAGE", "Hello {mention}\n\n<b>You Need To Join In My Channel/Group To Use Me\n\nKindly Please Join Channel</b>")
-
-
-
-
-
-ADMINS.append(OWNER_ID)
-ADMINS.append(6848088376)
-
-LOG_FILE_NAME = "filesharingbot.txt"
+# Logging setup
+LOG_FILE_NAME = "filesharingbot.log"
 
 logging.basicConfig(
     level=logging.INFO,
@@ -78,24 +75,23 @@ logging.basicConfig(
     handlers=[
         RotatingFileHandler(
             LOG_FILE_NAME,
-            maxBytes=50000000,
+            maxBytes=50 * 1024 * 1024,   # 50 MB
             backupCount=10
         ),
         logging.StreamHandler()
     ]
 )
-logging.getLogger("pyrogram").setLevel(logging.WARNING)
 
+logging.getLogger("pyrogram").setLevel(logging.WARNING)
 
 def LOGGER(name: str) -> logging.Logger:
     return logging.getLogger(name)
-   
 
 
-
-
-
-# Jishu Developer 
+# ────────────────────────────────────────────────
+#           DEVELOPER CREDITS (please keep)
+# ────────────────────────────────────────────────
+# Jishu Developer
 # Don't Remove Credit 🥺
 # Telegram Channel @Madflix_Bots
 # Backup Channel @JishuBotz
